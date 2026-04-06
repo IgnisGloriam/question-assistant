@@ -1,0 +1,6 @@
+python-docx
+PyMuPDF
+python-pptx
+sentence-transformers
+chromadb
+llama-cpp-python
