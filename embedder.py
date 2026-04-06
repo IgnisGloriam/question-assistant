@@ -5,6 +5,8 @@ from typing import Optional
 from parser import os
 
 
+
+
 class LectureIndex:
     """
     Индексирует фрагменты текста в векторную базу данных.
