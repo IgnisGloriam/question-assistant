@@ -1,5 +1,16 @@
 import chromadb
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
+from fastembed.common.model_description import PoolingType, ModelSource
+
+TextEmbedding.add_custom_model(
+    model="intfloat/multilingual-e5-small",
+    pooling=PoolingType.MEAN,
+    normalization=True,
+    sources=ModelSource(hf="intfloat/multilingual-e5-small"),  # can be used with an `url` to load files from a private storage
+    dim=384,
+    model_file="onnx/model.onnx",  # can be used to load an already supported model with another optimization or quantization, e.g. onnx/model_O4.onnx
+)
+
 from typing import Optional
 
 from parser import os
@@ -30,10 +41,10 @@ class LectureIndex:
 
         if os.path.exists(local_model_path):
             print(f"Загрузка модели из локальной папки: {local_model_path}...")
-            self.embedder = SentenceTransformer(local_model_path)
+            self.embedder = TextEmbedding(model_name)
         else:
             print(f"Модель не найдена локально. Скачивание {model_name}...")
-            self.embedder = SentenceTransformer(model_name)
+            self.embedder = TextEmbedding(model_name)
             # Сохраняем, чтобы в следующий раз не скачивать
             self.embedder.save(local_model_path)
             print(f"Модель сохранена в: {local_model_path}")
@@ -76,11 +87,11 @@ class LectureIndex:
         prefixed = ["passage: " + chunk for chunk in chunks]
 
         print(f"Векторизация {len(chunks)} фрагментов...")
-        embeddings = self.embedder.encode(
+        embeddings = list(self.embedder.embed(
             prefixed,
             show_progress_bar=True,
             normalize_embeddings=True
-        ).tolist()
+        ))
 
         # Сохраняем в ChromaDB
         self.collection.add(
@@ -107,10 +118,10 @@ class LectureIndex:
             return []
 
         # Для поискового запроса используется префикс "query: "
-        query_embedding = self.embedder.encode(
+        query_embedding = list(self.embedder.embed(
             ["query: " + query],
             normalize_embeddings=True
-        ).tolist()
+        ))
 
         results = self.collection.query(
             query_embeddings=query_embedding,

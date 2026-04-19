@@ -118,12 +118,15 @@ if __name__ == "__main__":
     from parser import extract_text
     from chunk import chunk_text
 
-    if len(sys.argv) < 2:
-        print("Использование: python retrieval.py <файл> [тема]")
-        sys.exit(1)
+    path = 'test_text/1 engl.docx'
+    topic = 'Bluetooth'
 
-    path = sys.argv[1]
-    topic = sys.argv[2] if len(sys.argv) > 2 else ""
+    # if len(sys.argv) < 2:
+    #     print("Использование: python retrieval.py <файл> [тема]")
+    #     sys.exit(1)
+
+    # path = sys.argv[1]
+    # topic = sys.argv[2] if len(sys.argv) > 2 else ""
 
     # Шаги 1-3: парсинг → чанкинг → индексация
     text = extract_text(path)

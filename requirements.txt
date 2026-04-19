@@ -1,6 +1,6 @@
 python-docx
 PyMuPDF
 python-pptx
-sentence-transformers
+fastembed
 chromadb
 llama-cpp-python
