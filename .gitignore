@@ -211,4 +211,4 @@ __marimo__/
 models/
 models*/
 
-test.py
+./test.py
