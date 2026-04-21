@@ -2,12 +2,6 @@ from embedder import LectureIndex
 
 
 class ContextRetriever:
-    """
-    Получает из векторной базы наиболее релевантные фрагменты
-    и склеивает их в готовый контекст для языковой модели.
-    """
-
-    # Запросы по умолчанию, если учитель не указал тему
     DEFAULT_QUERIES = [
         "основные понятия и определения",
         "ключевые идеи и выводы",
@@ -15,10 +9,6 @@ class ContextRetriever:
     ]
 
     def __init__(self, index: LectureIndex):
-        """
-        Args:
-            index: проиндексированная база фрагментов (из embedder.py)
-        """
         self.index = index
 
     def get_context(
@@ -27,40 +17,21 @@ class ContextRetriever:
         n_results: int = 5,
         max_context_chars: int = 3000
     ) -> str:
-        """
-        Находит релевантные фрагменты и собирает контекст.
-
-        Args:
-            topic: тема от учителя (может быть пустой)
-            n_results: сколько фрагментов искать на один запрос
-            max_context_chars: ограничение длины итогового контекста
-
-        Returns:
-            склеенный текст из найденных фрагментов
-        """
         if topic.strip():
-            # Учитель указал тему — ищем по ней
             fragments = self._search_by_topic(topic, n_results)
         else:
-            # Тема не указана — ищем по нескольким общим запросам
             fragments = self._search_broad(n_results)
 
-        # Собираем контекст с учётом лимита символов
         context = self._build_context(fragments, max_context_chars)
 
         return context
 
     def _search_by_topic(self, topic: str, n_results: int) -> list[str]:
-        """Поиск по конкретной теме"""
         print(f"Поиск по теме: «{topic}»")
         results = self.index.search(topic, n_results=n_results)
         return results
 
     def _search_broad(self, n_results_per_query: int) -> list[str]:
-        """
-        Поиск по нескольким общим запросам.
-        Убирает дубли, сохраняя порядок.
-        """
         print("Тема не указана, ищем по общим запросам...")
 
         all_fragments = []
@@ -83,19 +54,18 @@ class ContextRetriever:
         fragments: list[str],
         max_chars: int
     ) -> str:
-        """
-        Склеивает фрагменты в один текст.
-        Обрезает, если суммарная длина превышает лимит.
-        """
         context_parts = []
         total_length = 0
 
         for i, fragment in enumerate(fragments):
             if total_length + len(fragment) > max_chars:
-                # Добавляем остаток, который влезает
+                
                 remaining = max_chars - total_length
                 if remaining > 100:
                     context_parts.append(fragment[:remaining] + "...")
+                elif remaining > 0:
+                    context_parts.append(fragment)
+                
                 break
 
             context_parts.append(fragment)
@@ -109,12 +79,10 @@ class ContextRetriever:
         return context
 
 
-# ══════════════════════════════════════
-#  Запуск для проверки
-# ══════════════════════════════════════
+
 
 if __name__ == "__main__":
-    import sys
+    # import sys
     from parser import extract_text
     from chunk import chunk_text
 
@@ -128,13 +96,13 @@ if __name__ == "__main__":
     # path = sys.argv[1]
     # topic = sys.argv[2] if len(sys.argv) > 2 else ""
 
-    # Шаги 1-3: парсинг → чанкинг → индексация
+
     text = extract_text(path)
     chunks = chunk_text(text)
     index = LectureIndex()
     index.index_chunks(chunks)
 
-    # Шаг 5: получаем контекст
+    # получаем контекст
     retriever = ContextRetriever(index)
     context = retriever.get_context(topic=topic)
 

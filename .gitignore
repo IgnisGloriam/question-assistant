@@ -209,3 +209,6 @@ __marimo__/
 
 
 models/
+models*/
+
+test.py

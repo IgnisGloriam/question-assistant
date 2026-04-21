@@ -1,33 +1,12 @@
-# judge.py
-# Шаг 8: Оценка и выбор лучшего кандидата (LLM-as-Judge)
-
 import time
 from prompt_builder import build_judge_prompt
 
 def judge_and_refine(generator, candidates: list[str], context: str) -> str:
-    """
-    Выступает в роли строгого судьи. 
-    Анализирует сгенерированные варианты вопросов, выбирает лучший и исправляет его недочёты.
-    
-    Args:
-        generator: Экземпляр LLMGenerator (из Шага 7), в который уже загружена модель.
-        candidates: Список строк, где каждая строка — набор вопросов от модели.
-        context: Исходный учебный материал (фрагменты текста).
-        
-    Returns:
-        Финальный, отшлифованный набор вопросов.
-    """
     print("\n⚖️ Запуск LLM-судьи для выбора лучшего варианта...")
     start_time = time.time()
     
-    # 1. Формируем специальный промпт для судьи (из Шага 6)
     prompt = build_judge_prompt(candidates, context)
 
-    #print(prompt)
-    
-    # 2. Генерируем ответ. 
-    # ВАЖНО: temperature=0.1. Судья не должен фантазировать. 
-    # Ему нужна максимальная логика, точность и предсказуемость.
     print("  ⏳ Анализ кандидатов и формирование финального ответа...", end="", flush=True)
     
     final_result = generator.generate_single(
@@ -40,10 +19,6 @@ def judge_and_refine(generator, candidates: list[str], context: str) -> str:
     
     return final_result
 
-
-# ══════════════════════════════════════
-#  Запуск для проверки (Имитация полного цикла 6 -> 7 -> 8)
-# ══════════════════════════════════════
 
 if __name__ == "__main__":
 
