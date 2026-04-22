@@ -13,28 +13,25 @@ class LLMGenerator:
 
         print(f"Загрузка модели {model_path} в память...")
         
-        # Настройки llama.cpp для 4GB VRAM и 16GB RAM + Qwen2.5-3B
         self.llm = Llama(
             model_path=model_path,
-            n_ctx=4096,          # Размер контекстного окна (максимум токенов на вход + выход)
-            n_gpu_layers=40,     # Для 3B модели ~36 слоёв. Указываем с запасом, чтобы всё ушло на видеокарту!
-            n_threads=4,         # Количество потоков процессора (если что-то не влезло в GPU)
-            verbose=False        # Отключаем спам в консоль от движка C++
+            n_ctx=4096,
+            n_gpu_layers=40,
+            n_threads=4,
+            verbose=False
         )
         print("✅ Модель успешно загружена!")
 
     def generate_single(self, prompt: str, temperature: float = 0.7) -> str:
-        # Запуск авторегрессионной генерации
         response = self.llm(
             prompt,
-            max_tokens=1500,        # Ограничение на размер ответа (чтобы не генерировала бесконечно)
-            temperature=temperature, # Та самая "креативность"
-            top_p=0.9,              # Альтернативный параметр обрезки невероятных токенов
-            stop=["<|im_end|>"],    # СТОП-СЛОВО. Очень важно! Без него модель начнёт говорить сама с собой
-            echo=False              # Не возвращать сам промпт в ответе
+            max_tokens=1500,
+            temperature=temperature,
+            top_p=0.9,
+            stop=["<|im_end|>"],
+            echo=False
         )
         
-        # Извлекаем текст из структуры ответа llama.cpp
         return response["choices"][0]["text"].strip()
 
     def generate_candidates(self, prompt: str, n_candidates: int = 3) -> list[str]:
