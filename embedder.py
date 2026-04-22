@@ -59,15 +59,11 @@ class LectureIndex:
             metadata={"hnsw:space": "cosine"}
         )
 
-        # Модель e5 требует префикс "query: " или "passage: "
-        # Для индексации документов используется "passage: "
         prefixed = ["passage: " + chunk for chunk in chunks]
 
         print(f"Векторизация {len(chunks)} фрагментов...")
         embeddings = list(self.embedder.embed(
-            prefixed,
-            show_progress_bar=True,
-            normalize_embeddings=True
+            prefixed
         ))
 
         self.collection.add(
@@ -95,7 +91,7 @@ class LectureIndex:
         documents = results["documents"][0]
         distances = results["distances"][0]
 
-        # расстояния для отладки
+
         for i, (doc, dist) in enumerate(zip(documents, distances)):
             preview = doc[:80].replace("\n", " ")
             print(f"  [{i+1}] (расстояние: {dist:.4f}) {preview}...")
@@ -113,15 +109,12 @@ if __name__ == "__main__":
     path = 'test_text/1 engl.docx'
     query = 'Bluetooth'
 
-    # 1: парсинг
     text = extract_text(path)
     print(f"Извлечено {len(text)} символов")
 
-    # 2: чанки
     chunks = chunk_text(text)
     print(f"Разбито на {len(chunks)} фрагментов")
 
-    # 3: индексация
     index = LectureIndex()
     index.index_chunks(chunks)
 

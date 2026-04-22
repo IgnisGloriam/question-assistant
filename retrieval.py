@@ -102,7 +102,7 @@ if __name__ == "__main__":
     index = LectureIndex()
     index.index_chunks(chunks)
 
-    # получаем контекст
+
     retriever = ContextRetriever(index)
     context = retriever.get_context(topic=topic)
 
