@@ -15,7 +15,11 @@ from typing import Optional
 
 from parser import os
 
+import numpy as np
 
+def l2_normalize(mat: np.ndarray, eps: float = 1e-12) -> np.ndarray:
+    norms = np.linalg.norm(mat, axis=1, keepdims=True)
+    return mat / (norms + eps)
 
 
 class LectureIndex:
@@ -44,6 +48,13 @@ class LectureIndex:
 
         self.collection = None
 
+    def embed_texts(self, texts: list[str], normalize: bool = True) -> np.ndarray:
+        vectors = list(self.embedder.embed(texts))
+        X = np.vstack(vectors).astype(np.float32)
+        if normalize:
+            X = l2_normalize(X)
+        return X
+    
     def index_chunks(
         self,
         chunks: list[str],
@@ -62,9 +73,11 @@ class LectureIndex:
         prefixed = ["passage: " + chunk for chunk in chunks]
 
         print(f"Векторизация {len(chunks)} фрагментов...")
-        embeddings = list(self.embedder.embed(
-            prefixed
-        ))
+        
+        passages = ["passage: " + c for c in chunks]
+        
+        X = self.embed_texts(passages, normalize=True)
+        embeddings = X.tolist()
 
         self.collection.add(
             documents=chunks,
@@ -79,13 +92,11 @@ class LectureIndex:
             print("База пуста. Сначала вызовите index_chunks().")
             return []
 
-        query_embedding = list(self.embedder.embed(
-            ["query: " + query]
-        ))
+        query_embedding = self.embed_texts(["query: " + query], normalize=True)[0].tolist()
 
         results = self.collection.query(
-            query_embeddings=query_embedding,
-            n_results=min(n_results, self.collection.count())
+            query_embeddings=[query_embedding],
+            n_results=min(n_results, self.collection.count()),
         )
 
         documents = results["documents"][0]

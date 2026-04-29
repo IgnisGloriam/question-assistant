@@ -1,3 +1,5 @@
+import import_module
+
 from embedder import LectureIndex
 
 
