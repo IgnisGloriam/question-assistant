@@ -1,4 +1,7 @@
-import import_module
+try:
+    import import_module
+except:
+    pass
 
 import numpy as np
 from typing import List, Tuple

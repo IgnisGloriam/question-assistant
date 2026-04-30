@@ -1,4 +1,7 @@
-import import_module
+try:
+    import import_module
+except:
+    pass
 
 import re
 from dataclasses import dataclass
