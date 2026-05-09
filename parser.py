@@ -36,7 +36,6 @@ def _parse_txt(file_path: str) -> str:
         except UnicodeDecodeError:
             continue
 
-    # читаем с игнорированием ошибок, если не вышло нормально
     with open(file_path, encoding="utf-8", errors="ignore") as f:
         return f.read()
 
@@ -116,9 +115,7 @@ def _parse_pptx(file_path: str) -> str:
 
 
 
-def _clean_text(text: str) -> str:
-    """Очистка и нормализация текста"""
-    
+def _clean_text(text: str) -> str:    
     import re
     text = re.sub(r"[ \t]+", " ", text)
 
@@ -140,12 +137,7 @@ def _clean_text(text: str) -> str:
 
 
 
-
-#  тест
-
 if __name__ == "__main__":
-    
-
     path = 'test_text/1 engl.docx'
 
     try:

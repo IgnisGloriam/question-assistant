@@ -93,15 +93,7 @@ if __name__ == "__main__":
 
     path = 'test_text/1 engl.docx'
     topic = 'Bluetooth'
-
-    # if len(sys.argv) < 2:
-    #     print("Использование: python retrieval.py <файл> [тема]")
-    #     sys.exit(1)
-
-    # path = sys.argv[1]
-    # topic = sys.argv[2] if len(sys.argv) > 2 else ""
-
-
+    
     text = extract_text(path)
     chunks = chunk_text(text)
     index = LectureIndex()

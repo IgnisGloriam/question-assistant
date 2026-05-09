@@ -70,8 +70,6 @@ class LectureIndex:
             metadata={"hnsw:space": "cosine"}
         )
 
-        prefixed = ["passage: " + chunk for chunk in chunks]
-
         print(f"Векторизация {len(chunks)} фрагментов...")
         
         passages = ["passage: " + c for c in chunks]
@@ -129,7 +127,6 @@ if __name__ == "__main__":
     index = LectureIndex()
     index.index_chunks(chunks)
 
-    # поиск
     print(f"\nПоиск по запросу: «{query}»\n")
     results = index.search(query, n_results=3)
 

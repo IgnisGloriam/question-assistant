@@ -53,7 +53,7 @@ class MMRContextRetriever:
     def __init__(self, index):
         self.index = index
 
-    def get_context_mmr(
+    def get_context(
         self,
         query: str,
         top_m: int = 10,
@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
 
     retriever = MMRContextRetriever(index)
-    context, selected_fragments = retriever.get_context_mmr(query=topic, n_select=5)
+    context, selected_fragments = retriever.get_context(query=topic, n_select=5)
 
     print("\n" + "=" * 60)
     print("ИТОГОВЫЙ КОНТЕКСТ ДЛЯ LLM:")
