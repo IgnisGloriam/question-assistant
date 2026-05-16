@@ -4,3 +4,5 @@ python-pptx
 fastembed
 chromadb
 llama-cpp-python
+nltk
+datasets

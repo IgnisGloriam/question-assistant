@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
 
     retriever = ContextRetriever(index)
-    context = retriever.get_context(topic=topic, n_results=10)
+    context = retriever.get_context(topic=topic, n_results=5, max_context_chars=3000)
 
     print("\n" + "=" * 60)
     print("ИТОГОВЫЙ КОНТЕКСТ ДЛЯ LLM:")
