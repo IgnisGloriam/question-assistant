@@ -15,10 +15,11 @@ class LLMGenerator:
         
         self.llm = Llama(
             model_path=model_path,
-            n_ctx=4096 * 5,
+            n_ctx=4096 * 10,
             n_gpu_layers=40,
             n_threads=4,
-            verbose=False
+            verbose=False,
+            chat_template_kwargs={"enable_thinking": False}
         )
         print("✅ Модель успешно загружена!")
 

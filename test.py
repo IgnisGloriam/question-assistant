@@ -157,9 +157,6 @@ def self_bleu(questions: List[str], max_n: int = 4) -> float:
     return float(np.mean(scores)) if scores else 0.0
 
 
-# -------------------------
-# Embedding-based metrics
-# -------------------------
 
 def _q_emb(index: LectureIndex, text: str) -> np.ndarray:
     return index.embed_texts(["query: " + text], normalize=True)[0]
@@ -185,9 +182,6 @@ def compute_novelty(question: str, others: List[str], index: LectureIndex) -> fl
     return float(1.0 - np.mean(cosine_similarity(q, embs)))
 
 
-# -------------------------
-# Text-based metrics
-# -------------------------
 
 def compute_coverage(question: str, context: str) -> float:
     q_words = set(re.findall(r"\b\w{4,}\b", question.lower()))
@@ -214,9 +208,6 @@ def compute_diversity(questions: List[str]) -> float:
     return 1.0 - (sum(scores) / len(scores))
 
 
-# -------------------------
-# Per-question answer metrics (без gold — считаем question vs context)
-# -------------------------
 
 def compute_question_answer_metrics(question: str, context: str) -> Dict[str, float]:
     """
