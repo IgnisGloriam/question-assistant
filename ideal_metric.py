@@ -13,7 +13,7 @@ from datasets import load_dataset
 
 from embedder import LectureIndex
 from chunk import chunk_text
-from retrieval.retrieval import ContextRetriever
+from retrieval import ContextRetriever
 from generator import LLMGenerator
 from ragas_metrics import LocalRAGAS
 
