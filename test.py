@@ -18,8 +18,8 @@ from ragas_metrics import LocalRAGAS
 
 
 
-DOC_PATH      = "test_text/Булгаков Михаил. Мастер и Маргарита.txt"
-TOPICS        = ["Кем является кот", "Кто был дьяволом", "Одежда Мастера"]
+DOC_PATH      = "test_text/история.pdf"
+TOPICS        = ["Когда родился Пётр Первый", "Екатерина Великая", "Российский флот"]
 LLM_PATH      = "D:/models/qwen2.5-3b-instruct-q4_k_m.gguf"
 METHODS       = ["topk"] #, "mmr", "dpp"
 K_SELECT      = 5

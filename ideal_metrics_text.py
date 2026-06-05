@@ -15,13 +15,10 @@ from retrieval.retrieval import ContextRetriever
 from generator import LLMGenerator
 from ragas_metrics import LocalRAGAS
 
-# ============================================================
-# НАСТРОЙКИ (КОНФИГУРАЦИЯ)
-# ============================================================
 
-DOC_PATH      = "test_text/pc.txt"  # Путь к твоему тексту
-# Темы, по которым нужно сгенерировать тесты (т.к. у нас нет XQuAD вопросов)
-TOPICS        = ["Bluetooth", "История создания сетей"]
+DOC_PATH      = "test_text/история.pdf" 
+
+TOPICS        = ["Когда родился Пётр Первый", "Екатерина Великая", "Российский флот"]
 
 LLM_PATH      = "D:/models/qwen2.5-3b-instruct-q4_k_m.gguf"
 K_SELECT      = 3        
@@ -37,9 +34,7 @@ FIELDNAMES = [
     "generation_time_sec", "llm_correct_answer"
 ]
 
-# ============================================================
-# МЕТРИКИ (БЕЗ ЭТАЛОННОГО ОТВЕТА)
-# ============================================================
+
 
 def _norm(s: str) -> str:
     s = (s or "").strip().lower().replace("ё", "е")
@@ -78,9 +73,7 @@ def compute_ragas(question: str, pred_answer: str, chunks: List[str], index: Lec
         "ragas_answer_relevancy": float(ragas.answer_relevancy(question, pred_answer)),
     }
 
-# ============================================================
-# ПРОМПТЫ И ПАРСИНГ
-# ============================================================
+
 
 def build_test_prompt(context: str, topic: str) -> str:
     return f"""<|im_start|>system
@@ -153,9 +146,7 @@ def parse_generated_test(raw_text: str) -> Tuple[str, List[str], List[str], str]
     distractors = [opt for opt in options if _norm(opt) not in _norm(correct_answer)]
     return question, options, distractors, correct_answer
 
-# ============================================================
-# LLM AS A JUDGE ЛОГИКА
-# ============================================================
+
 
 def judge_and_refine(generator: LLMGenerator, candidates: List[str], context: str, topic: str) -> str:
     print("\n  ⚖️ Запуск LLM-судьи для выбора лучшего варианта...")
@@ -164,15 +155,13 @@ def judge_and_refine(generator: LLMGenerator, candidates: List[str], context: st
     final_result = generator.generate_single(prompt=prompt, temperature=0.1)
     return final_result
 
-# ============================================================
-# MAIN
-# ============================================================
+
 
 if __name__ == "__main__":
 
     print(f"Загрузка и чанкинг локального файла: {DOC_PATH}")
     text = extract_text(DOC_PATH)
-    chunks = chunk_text(text, min_size=200, max_size=500, overlap=50)
+    chunks = chunk_text(text, min_size=200, max_size=1000, overlap=50)
     
     print("Индексация базы данных...")
     global_index = LectureIndex()
@@ -189,27 +178,24 @@ if __name__ == "__main__":
             print(f"Тема {t_idx+1}/{len(TOPICS)}: {topic}")
             print(f"{'='*60}")
 
-            # 1. Поиск (Retrieval)
             retriever = ContextRetriever(global_index)
             retrieved_context = retriever.get_context(topic=topic, n_results=K_SELECT, max_context_chars=2000)
             retrieved_chunks = global_index.search(topic, n_results=K_SELECT)
 
             t0 = time.time()
             
-            # 2. Генерация N кандидатов (Best-of-N)
             print(f"  📝 Генерация {N_CANDIDATES} кандидатов...")
             gen_prompt = build_test_prompt(retrieved_context, topic)
+
+
             candidates = generator.generate_candidates(gen_prompt, n_candidates=N_CANDIDATES)
 
-            # 3. Суд (LLM-as-a-Judge)
             final_raw_output = judge_and_refine(generator, candidates, retrieved_context, topic)
             
             elapsed = time.time() - t0
 
-            # 4. Парсинг итогового теста
             gen_q, all_options, distractors, llm_correct_ans = parse_generated_test(final_raw_output)
 
-            # 5. Метрики без эталона
             d_dist = distractor_distinctness(llm_correct_ans, distractors, global_index)
             d_plaus = distractor_plausibility(gen_q, distractors, global_index)
             f_score = format_adherence_score(gen_q, all_options, llm_correct_ans)

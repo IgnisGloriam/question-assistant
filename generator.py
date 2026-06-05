@@ -15,7 +15,7 @@ class LLMGenerator:
         
         self.llm = Llama(
             model_path=model_path,
-            n_ctx=4096 * 10,
+            n_ctx=32768,
             n_gpu_layers=40,
             n_threads=4,
             verbose=False,
@@ -35,7 +35,7 @@ class LLMGenerator:
         
         return response["choices"][0]["text"].strip()
 
-    def generate_candidates(self, prompt: str, n_candidates: int = 3) -> list[str]:
+    def generate_candidates(self, prompt: str, n_candidates: int = 3, temperatures = [0.3, 0.5, 0.7, 0.4, 0.8]) -> list[str]:
         print(f"🚀 Запуск генерации {n_candidates} кандидатов (Best-of-N)...")
         
         temperatures = [0.3, 0.5, 0.7, 0.4, 0.8] 
