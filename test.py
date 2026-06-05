@@ -10,7 +10,7 @@ from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 from embedder import LectureIndex
 from chunk import chunk_text
 from parser import extract_text
-from retrieval.retrieval import ContextRetriever
+from retrieval import ContextRetriever
 from retrieval.mmr_retrieval import MMRContextRetriever
 from retrieval.dpp_retrieval import DPPContextRetriever
 from generator import LLMGenerator

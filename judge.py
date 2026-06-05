@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     from parser import extract_text
     from chunk import chunk_text
-    from retrieval.retrieval import LectureIndex, ContextRetriever
+    from retrieval import LectureIndex, ContextRetriever
     from generator import LLMGenerator
 
     path = 'test_text/1 engl.docx'

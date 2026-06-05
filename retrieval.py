@@ -1,8 +1,3 @@
-try:
-    import import_module
-except:
-    pass
-
 from embedder import LectureIndex
 
 
