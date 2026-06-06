@@ -65,7 +65,7 @@ def _parse_docx(file_path: str) -> str:
 
 
 def _parse_pdf(file_path: str) -> str:
-    import fitz  # PyMuPDF
+    import fitz
     
     doc = fitz.open(file_path)
     parts = []
@@ -96,7 +96,6 @@ def _parse_pptx(file_path: str) -> str:
                     if text:
                         slide_texts.append(text)
 
-            # Текст из таблиц на слайдах
             if shape.has_table:
                 for row in shape.table.rows:
                     row_text = []
@@ -119,17 +118,13 @@ def _clean_text(text: str) -> str:
     import re
     text = re.sub(r"[ \t]+", " ", text)
 
-    # Убираем множественные пустые строки (оставляем максимум одну)
     text = re.sub(r"\n{3,}", "\n\n", text)
 
-    # Убираем пробелы в начале и конце строк
     lines = [line.strip() for line in text.split("\n")]
     text = "\n".join(lines)
 
-    # убираем множественные пробелы
     text = re.sub(r'[ \t]+', ' ', text)
 
-    # Убираем пробелы в начале и конце всего текста
     text = text.strip()
 
     return text

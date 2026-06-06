@@ -67,9 +67,7 @@ def format_adherence_score(question: str, options: List[str], correct_ans: str) 
 def compute_ragas(question: str, pred_answer: str, chunks: List[str], index: LectureIndex) -> Dict[str, float]:
     ragas = LocalRAGAS(index=index)
     return {
-        # Самое важное: подтверждается ли ответ текстом из файла?
         "ragas_faithfulness":     float(ragas.faithfulness(pred_answer, chunks)),
-        # Отвечает ли ответ на заданный вопрос?
         "ragas_answer_relevancy": float(ragas.answer_relevancy(question, pred_answer)),
     }
 
@@ -151,7 +149,6 @@ def parse_generated_test(raw_text: str) -> Tuple[str, List[str], List[str], str]
 def judge_and_refine(generator: LLMGenerator, candidates: List[str], context: str, topic: str) -> str:
     print("\n  ⚖️ Запуск LLM-судьи для выбора лучшего варианта...")
     prompt = build_judge_prompt(candidates, context, topic)
-    # Используем низкую температуру для судьи, чтобы он был строгим и логичным
     final_result = generator.generate_single(prompt=prompt, temperature=0.1)
     return final_result
 
@@ -202,14 +199,12 @@ if __name__ == "__main__":
             
             rgs = compute_ragas(gen_q, llm_correct_ans, retrieved_chunks, global_index)
 
-            # Логирование
             md_file.write(f"## Тема: {topic}\n\n")
             md_file.write(f"**Найденный контекст (выжимка):**\n> {retrieved_context[:300].replace(chr(10), ' ')}...\n\n")
             md_file.write(f"🏆 **Итоговый тест (После Судьи):**\n```text\n{final_raw_output.strip()}\n```\n\n")
             md_file.write(f"📊 *Метрики:* Format Score: {f_score:.2f} | Distr Distinctness: {d_dist:.2f} | Distr Plausibility: {d_plaus:.2f} | Faithfulness: {rgs['ragas_faithfulness']:.2f}\n")
             md_file.write("---\n\n")
 
-            # Сбор данных для CSV
             results.append({
                 "topic": topic,
                 "generated_question": gen_q,
@@ -224,7 +219,6 @@ if __name__ == "__main__":
             
             print(f"  ✅ Готово за {elapsed:.1f}s | Формат: {f_score:.2f} | Faithfulness: {rgs['ragas_faithfulness']:.2f}")
 
-    # Сохранение и вывод
     if results:
         with open(OUTPUT_CSV, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=FIELDNAMES)

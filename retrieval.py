@@ -82,7 +82,6 @@ class ContextRetriever:
 
 
 if __name__ == "__main__":
-    # import sys
     from parser import extract_text
     from chunk import chunk_text
 

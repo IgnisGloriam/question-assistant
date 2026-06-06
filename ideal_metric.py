@@ -115,9 +115,6 @@ def compute_ragas(question: str, pred_answer: str, chunks: List[str], index: Lec
         "ragas_answer_relevancy": float(ragas.answer_relevancy(question, pred_answer)),
     }
 
-# ============================================================
-# ГЕНЕРАЦИЯ И ПАРСИНГ ТЕСТА (Без изменений)
-# ============================================================
 
 def build_test_prompt(context: str, topic: str) -> str:
     return f"""<|im_start|>system
@@ -172,10 +169,6 @@ def parse_generated_test(raw_text: str) -> Tuple[str, List[str], List[str], str]
     return question, options, distractors, correct_answer
 
 
-# ============================================================
-# MAIN: СРАВНЕНИЕ МОДЕЛЕЙ
-# ============================================================
-
 if __name__ == "__main__":
 
     print("Загрузка и перемешивание XQuAD (ru)...")
@@ -184,13 +177,11 @@ if __name__ == "__main__":
     print(seed)
     ds_shuffled = ds.shuffle(seed=seed)
     
-    # Фиксируем одни и те же примеры для всех моделей
     n_limit = min(N_XQUAD_SAMPLES, len(ds_shuffled))
     selected_examples = [ds_shuffled[i] for i in range(n_limit)]
     
     results = []
     
-    # Словарь для красивого логгирования (группируем по примерам)
     md_logs = {i: {"xquad_q": ex["question"], "gold": ex["answers"]["text"][0] if ex["answers"]["text"] else "", "models": {}} for i, ex in enumerate(selected_examples)}
 
     for model_path in LLM_PATHS:
