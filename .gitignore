@@ -222,3 +222,6 @@ task/
 
 *.md
 *.csv
+*.pdf
+
+old/

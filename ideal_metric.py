@@ -19,8 +19,8 @@ from ragas_metrics import LocalRAGAS
 
 
 
-N_XQUAD_SAMPLES = 3
-K_SELECT        = 3        
+N_XQUAD_SAMPLES = 100
+K_SELECT = 3        
 
 LLM_PATHS = [
     #"D:/models/qwen2.5-3b-instruct-q4_k_m.gguf",
@@ -29,8 +29,8 @@ LLM_PATHS = [
     #"D:/models/Qwen3-1.7B-Q4_K_M-Instruct.gguf",
 ]
 
-OUTPUT_CSV    = "rag_models_comparison.csv"
-OUTPUT_MD     = "rag_models_comparison_log.md"
+OUTPUT_CSV = "rag_models_comparison.csv"
+OUTPUT_MD = "rag_models_comparison_log.md"
 
 FIELDNAMES = [
     "model_name", "example_id", "xquad_original_question", "generated_question",
@@ -173,7 +173,7 @@ if __name__ == "__main__":
 
     print("Загрузка и перемешивание XQuAD (ru)...")
     ds = load_dataset("xquad", "xquad.ru")["validation"]
-    seed = random.randint(1, 10000)
+    seed = 40 #random.randint(1, 10000)
     print(seed)
     ds_shuffled = ds.shuffle(seed=seed)
     
@@ -218,7 +218,7 @@ if __name__ == "__main__":
                 print("bp")
                 prompt += "<think> </think>"
 
-            raw_output = generator.generate_candidates(prompt, n_candidates=1)[0]
+            raw_output = generator.generate_candidates(prompt, n_candidates=1,temperatures=[0.3])[0]
             elapsed = time.time() - t0
 
             gen_q, all_options, distractors, llm_correct_ans = parse_generated_test(raw_output)
